@@ -1,16 +1,12 @@
+# 📱 CodeCatcher
+
 <div align="center">
   <img src="images/icon.png" width="120" height="120" style="border-radius: 20px; background: white; padding: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-
-
-## 📱 CodeCatcher
-
-<div align="center">
   
-![版本](https://img.shields.io/badge/版本-1.0.0-blue.svg)
-![平台](https://img.shields.io/badge/平台-macOS%2013.0%2B-brightgreen.svg)
-![语言](https://img.shields.io/badge/语言-Swift%206.0-orange.svg)
-![许可](https://img.shields.io/badge/许可-MIT-green.svg)
-
+  ![版本](https://img.shields.io/badge/版本-1.0.0-blue.svg)
+  ![平台](https://img.shields.io/badge/平台-macOS%2013.0%2B-brightgreen.svg)
+  ![语言](https://img.shields.io/badge/语言-Swift%206.0-orange.svg)
+  ![许可](https://img.shields.io/badge/许可-MIT-green.svg)
 </div>
 
 ## 📖 概述
@@ -166,14 +162,6 @@ CodeCatcher是一款基于Swift和SwiftUI开发的macOS高效验证码提取和�
 ### 方法二：自行构建
 
 详细的构建说明请参阅 [BUILDING.md](BUILDING.md) 文件。
-
-
-### 开发者选项
-
-开发者可以扩展应用的功能：
-- 添加新的验证码模式识别
-- 增强AI识别能力
-- 添加新的验证码来源
 
 ## 👥 贡献指南
 
