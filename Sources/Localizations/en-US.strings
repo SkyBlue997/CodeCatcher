@@ -1,0 +1,79 @@
+/* Tab Titles */
+"history_tab" = "History";
+"settings_tab" = "Settings";
+"about_tab" = "About";
+
+/* General */
+"latest_code" = "Latest Code";
+"no_code" = "No Verification Code";
+"copy" = "Copy";
+"options" = "Options";
+"open_main_window" = "Open Main Window";
+"settings" = "Settings";
+"quit" = "Quit";
+"close" = "Close";
+
+/* History View */
+"recent_codes" = "Recently Captured Codes";
+"clear_history" = "Clear History";
+"code_details" = "Code Details";
+"source" = "Source";
+
+/* Settings View */
+"launch_at_login" = "Launch at Login";
+"language" = "Language";
+"system_language" = "System";
+"chinese" = "简体中文";
+"english" = "English";
+"japanese" = "日本語";
+"korean" = "한국어";
+"restart_to_apply" = "Restart to apply changes";
+"monitor_notifications" = "Monitor Notifications";
+"accessibility_permission" = "Accessibility Permission";
+"request_permission" = "Request Permission";
+"history_retention_time" = "History Retention Time";
+"hours" = "hours";
+"auto_delete_note" = "Verification codes will be automatically deleted after the retention period.";
+"monitor_clipboard" = "Monitor Clipboard";
+"detection_interval" = "Detection Interval";
+"seconds" = "seconds";
+"interval_note" = "Minimum time between clipboard changes before copying a new code.";
+"auto_copy" = "Auto Copy to Clipboard";
+"auto_copy_note" = "Automatically copy verification codes to the clipboard when detected";
+
+/* AI Detection */
+"ai_detection" = "AI-based Code Detection";
+"ai_detection_note" = "Use on-device AI to improve verification code recognition accuracy";
+
+/* Appearance */
+"appearance" = "Appearance";
+"appearance_system" = "System";
+"appearance_light" = "Light";
+"appearance_dark" = "Dark";
+"appearance_note" = "Set the appearance mode of the application";
+
+/* About Permissions */
+"about_permissions" = "About Accessibility Permissions";
+"permission_note" = "To read notification content, CodeCatcher needs accessibility permissions. These permissions are only used to read notification content to extract verification codes and won't be used for other purposes.";
+"how_to_enable" = "How to enable:";
+"permission_steps" = "1. Go to System Settings > Privacy & Security > Accessibility\n2. Check \"CodeCatcher\" in the list\n3. Restart the application";
+
+/* About View */
+"app_name" = "CodeCatcher";
+"version" = "Version";
+"app_description" = "Automatically capture and extract verification codes from system notifications, simplifying your login and verification processes.";
+"feature_notification" = "Notification Monitoring";
+"feature_notification_desc" = "Monitor system notifications and automatically detect verification codes";
+"feature_extract" = "Smart Extraction";
+"feature_extract_desc" = "Automatically identify and extract verification codes in various formats";
+"feature_copy" = "Auto Copy";
+"feature_copy_desc" = "Verification codes are automatically copied to the clipboard, always ready to use";
+"feature_history" = "History Records";
+"feature_history_desc" = "Save recent verification codes for easy retrieval and use";
+"copyright" = "© 2024 CodeCatcher. All rights reserved.";
+
+/* Other */
+"just_now" = "just now";
+"minutes_ago" = "minutes ago";
+"hours_ago" = "hours ago";
+"days_ago" = "days ago"; 

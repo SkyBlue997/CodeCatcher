@@ -1,0 +1,79 @@
+/* 탭 제목 */
+"history_tab" = "기록";
+"settings_tab" = "설정";
+"about_tab" = "정보";
+
+/* 일반 */
+"latest_code" = "최신 코드";
+"no_code" = "인증 코드 없음";
+"copy" = "복사";
+"options" = "옵션";
+"open_main_window" = "메인 창 열기";
+"settings" = "설정";
+"quit" = "종료";
+"close" = "닫기";
+
+/* 기록 보기 */
+"recent_codes" = "최근 캡처된 코드";
+"clear_history" = "기록 지우기";
+"code_details" = "코드 세부정보";
+"source" = "출처";
+
+/* 설정 보기 */
+"launch_at_login" = "로그인 시 실행";
+"language" = "언어";
+"system_language" = "시스템";
+"chinese" = "简体中文";
+"english" = "English";
+"japanese" = "日本語";
+"korean" = "한국어";
+"restart_to_apply" = "변경 사항을 적용하려면 재시작하세요";
+"monitor_notifications" = "알림 모니터링";
+"accessibility_permission" = "접근성 권한";
+"request_permission" = "권한 요청";
+"history_retention_time" = "기록 보관 시간";
+"hours" = "시간";
+"auto_delete_note" = "인증 코드는 보존 기간이 지나면 자동으로 삭제됩니다.";
+"monitor_clipboard" = "클립보드 모니터링";
+"detection_interval" = "감지 간격";
+"seconds" = "초";
+"interval_note" = "새 코드를 복사하기 전 클립보드 변경 사이의 최소 시간.";
+"auto_copy" = "클립보드에 자동 복사";
+"auto_copy_note" = "인증 코드가 감지되면 자동으로 클립보드에 복사";
+
+/* AI 감지 */
+"ai_detection" = "AI 기반 코드 감지";
+"ai_detection_note" = "기기 내 AI를 사용하여 인증 코드 인식 정확도 향상";
+
+/* 외관 모드 */
+"appearance" = "외관 모드";
+"appearance_system" = "시스템";
+"appearance_light" = "라이트 모드";
+"appearance_dark" = "다크 모드";
+"appearance_note" = "앱의 외관 모드를 설정합니다";
+
+/* 권한 정보 */
+"about_permissions" = "접근성 권한 정보";
+"permission_note" = "알림 내용을 읽기 위해 CodeCatcher는 접근성 권한이 필요합니다. 이 권한은 알림 내용에서 인증 코드를 추출하는 데만 사용되며 다른 목적으로는 사용되지 않습니다.";
+"how_to_enable" = "활성화 방법:";
+"permission_steps" = "1. 시스템 설정 > 개인 정보 및 보안 > 접근성으로 이동\n2. 목록에서 \"CodeCatcher\" 선택\n3. 응용 프로그램 재시작";
+
+/* 정보 보기 */
+"app_name" = "CodeCatcher";
+"version" = "버전";
+"app_description" = "시스템 알림에서 인증 코드를 자동으로 캡처하고 추출하여 로그인 및 인증 과정을 간소화합니다.";
+"feature_notification" = "알림 모니터링";
+"feature_notification_desc" = "시스템 알림을 모니터링하고 자동으로 인증 코드 감지";
+"feature_extract" = "스마트 추출";
+"feature_extract_desc" = "다양한 형식의 인증 코드를 자동으로 식별하고 추출";
+"feature_copy" = "자동 복사";
+"feature_copy_desc" = "인증 코드가 자동으로 클립보드에 복사되어 언제든지 사용 가능";
+"feature_history" = "기록 관리";
+"feature_history_desc" = "최근 인증 코드 저장으로 쉽게 찾고 사용";
+"copyright" = "© 2024 CodeCatcher. All rights reserved.";
+
+/* 기타 */
+"just_now" = "방금 전";
+"minutes_ago" = "분 전";
+"hours_ago" = "시간 전";
+"days_ago" = "일 전"; 

@@ -1,0 +1,79 @@
+/* 标签页标题 */
+"history_tab" = "历史记录";
+"settings_tab" = "设置";
+"about_tab" = "关于";
+
+/* 通用 */
+"latest_code" = "最新验证码";
+"no_code" = "暂无验证码";
+"copy" = "复制";
+"options" = "选项";
+"open_main_window" = "打开主窗口";
+"settings" = "设置";
+"quit" = "退出";
+"close" = "关闭";
+
+/* 历史记录视图 */
+"recent_codes" = "最近捕获的验证码";
+"clear_history" = "清空历史";
+"code_details" = "验证码详情";
+"source" = "来源";
+
+/* 设置视图 */
+"launch_at_login" = "登录时启动";
+"language" = "语言";
+"system_language" = "跟随系统";
+"chinese" = "简体中文";
+"english" = "English";
+"japanese" = "日本語";
+"korean" = "한국어";
+"restart_to_apply" = "重启应用后生效";
+"monitor_notifications" = "监听系统通知";
+"accessibility_permission" = "辅助功能权限";
+"request_permission" = "请求权限";
+"history_retention_time" = "历史记录保留时间";
+"hours" = "小时";
+"auto_delete_note" = "验证码记录将在超过保留时间后自动删除。";
+"monitor_clipboard" = "监听剪贴板";
+"detection_interval" = "更改检测间隔";
+"seconds" = "秒";
+"interval_note" = "复制新代码之前剪贴板更改的最短时间。";
+"auto_copy" = "自动复制到剪贴板";
+"auto_copy_note" = "当识别到验证码时，自动复制到剪贴板";
+
+/* AI检测 */
+"ai_detection" = "基于AI的验证码检测";
+"ai_detection_note" = "使用本地AI技术提高验证码识别准确率";
+
+/* 深色模式 */
+"appearance" = "外观模式";
+"appearance_system" = "跟随系统";
+"appearance_light" = "浅色模式";
+"appearance_dark" = "深色模式";
+"appearance_note" = "设置应用的外观模式";
+
+/* 关于权限的说明 */
+"about_permissions" = "关于辅助功能权限";
+"permission_note" = "为了读取通知内容，验证码捕手需要获取辅助功能权限。这些权限仅用于读取通知内容以提取验证码，不会用于其他目的。";
+"how_to_enable" = "如何开启权限：";
+"permission_steps" = "1. 前往系统设置 > 隐私与安全性 > 辅助功能\n2. 在列表中勾选"验证码捕手"\n3. 重启应用程序";
+
+/* 关于视图 */
+"app_name" = "验证码捕手";
+"version" = "版本";
+"app_description" = "自动捕获并提取系统通知中的验证码，简化您的登录和验证流程。";
+"feature_notification" = "通知监听";
+"feature_notification_desc" = "监听系统通知，自动检测验证码";
+"feature_extract" = "智能提取";
+"feature_extract_desc" = "自动识别并提取各种格式的验证码";
+"feature_copy" = "自动复制";
+"feature_copy_desc" = "验证码自动复制到剪贴板，随时可用";
+"feature_history" = "历史记录";
+"feature_history_desc" = "保存最近的验证码，方便查找和使用";
+"copyright" = "© 2024 验证码捕手. 保留所有权利。";
+
+/* 其他 */
+"just_now" = "刚刚";
+"minutes_ago" = "分钟前";
+"hours_ago" = "小时前";
+"days_ago" = "天前"; 

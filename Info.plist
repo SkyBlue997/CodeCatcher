@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>zh_CN</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.codecatcher.app</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>验证码捕手</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>CFBundleIconName</key>
+    <string>AppIcon</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.utilities</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+    <key>NSHumanReadableCopyright</key>
+    <string>© 2024 验证码捕手. 保留所有权利。</string>
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+    <key>NSSupportsAutomaticTermination</key>
+    <true/>
+    <key>NSSupportsSuddenTermination</key>
+    <true/>
+    <key>LSUIElement</key>
+    <false/>
+    <!-- 登录时自启动权限 -->
+    <key>SMLoginItemAuthorizationRight</key>
+    <string>com.codecatcher.app.auth</string>
+    <!-- 权限描述 -->
+    <key>NSNotificationsUsageDescription</key>
+    <string>需要通知权限才能读取通知中的验证码</string>
+    <key>NSAppleEventsUsageDescription</key>
+    <string>需要控制其他应用的权限才能读取通知内容</string>
+    <!-- 添加完全磁盘访问权限描述 -->
+    <key>NSDesktopFolderUsageDescription</key>
+    <string>需要访问桌面文件夹以检测和提取验证码</string>
+    <key>NSDocumentsFolderUsageDescription</key>
+    <string>需要访问文档文件夹以检测和提取验证码</string>
+    <key>NSDownloadsFolderUsageDescription</key>
+    <string>需要访问下载文件夹以检测和提取验证码</string>
+    <key>NSRemovableVolumesUsageDescription</key>
+    <string>需要访问可移动卷以检测和提取验证码</string>
+    <key>NSFileProviderDomainUsageDescription</key>
+    <string>需要访问文件以提供验证码识别服务</string>
+    <key>NSSystemAdministrationUsageDescription</key>
+    <string>需要系统管理员权限来执行验证码识别功能</string>
+    <!-- 添加隐私政策URL -->
+    <key>NSPrivacyAccessedAPITypes</key>
+    <array>
+        <dict>
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array>
+                <string>CA92.1</string>
+            </array>
+        </dict>
+        <dict>
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategoryFileTimestamp</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array>
+                <string>1C8F.1</string>
+            </array>
+        </dict>
+    </array>
+    <key>ITSAppUsesNonExemptEncryption</key>
+    <false/>
+</dict>
+</plist> 

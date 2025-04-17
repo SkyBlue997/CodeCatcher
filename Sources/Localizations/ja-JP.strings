@@ -1,0 +1,79 @@
+/* タブタイトル */
+"history_tab" = "履歴";
+"settings_tab" = "設定";
+"about_tab" = "概要";
+
+/* 一般 */
+"latest_code" = "最新コード";
+"no_code" = "認証コードなし";
+"copy" = "コピー";
+"options" = "オプション";
+"open_main_window" = "メインウィンドウを開く";
+"settings" = "設定";
+"quit" = "終了";
+"close" = "閉じる";
+
+/* 履歴ビュー */
+"recent_codes" = "最近キャプチャしたコード";
+"clear_history" = "履歴を消去";
+"code_details" = "コード詳細";
+"source" = "ソース";
+
+/* 設定ビュー */
+"launch_at_login" = "ログイン時に起動";
+"language" = "言語";
+"system_language" = "システム";
+"chinese" = "简体中文";
+"english" = "English";
+"japanese" = "日本語";
+"korean" = "한국어";
+"restart_to_apply" = "変更を適用するには再起動してください";
+"monitor_notifications" = "通知をモニタリング";
+"accessibility_permission" = "アクセシビリティ権限";
+"request_permission" = "権限をリクエスト";
+"history_retention_time" = "履歴保持時間";
+"hours" = "時間";
+"auto_delete_note" = "認証コードは保持期間後に自動的に削除されます。";
+"monitor_clipboard" = "クリップボードをモニタリング";
+"detection_interval" = "検出間隔";
+"seconds" = "秒";
+"interval_note" = "新しいコードをコピーする前のクリップボード変更の最小時間。";
+"auto_copy" = "クリップボードに自動コピー";
+"auto_copy_note" = "認証コードを検出したときに自動的にクリップボードにコピーします";
+
+/* AI検出 */
+"ai_detection" = "AIベースのコード検出";
+"ai_detection_note" = "デバイス上のAIを使用して認証コード認識の精度を向上";
+
+/* 外観モード */
+"appearance" = "外観モード";
+"appearance_system" = "システム";
+"appearance_light" = "ライトモード";
+"appearance_dark" = "ダークモード";
+"appearance_note" = "アプリケーションの外観モードを設定します";
+
+/* 権限について */
+"about_permissions" = "アクセシビリティ権限について";
+"permission_note" = "通知内容を読み取るために、CodeCatcherはアクセシビリティ権限が必要です。これらの権限は通知内容から認証コードを抽出するためだけに使用され、他の目的には使用されません。";
+"how_to_enable" = "有効にする方法：";
+"permission_steps" = "1. システム設定 > プライバシーとセキュリティ > アクセシビリティに移動\n2. リストで「CodeCatcher」をチェック\n3. アプリケーションを再起動する";
+
+/* 概要ビュー */
+"app_name" = "CodeCatcher";
+"version" = "バージョン";
+"app_description" = "システム通知から自動的に認証コードをキャプチャして抽出し、ログインと認証プロセスを簡素化します。";
+"feature_notification" = "通知モニタリング";
+"feature_notification_desc" = "システム通知をモニタリングし、自動的に認証コードを検出";
+"feature_extract" = "スマート抽出";
+"feature_extract_desc" = "さまざまな形式の認証コードを自動的に識別して抽出";
+"feature_copy" = "自動コピー";
+"feature_copy_desc" = "認証コードは自動的にクリップボードにコピーされ、いつでも使用可能";
+"feature_history" = "履歴記録";
+"feature_history_desc" = "最近の認証コードを保存して簡単に取得して使用";
+"copyright" = "© 2024 CodeCatcher. All rights reserved.";
+
+/* その他 */
+"just_now" = "たった今";
+"minutes_ago" = "分前";
+"hours_ago" = "時間前";
+"days_ago" = "日前"; 
