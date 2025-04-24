@@ -12,7 +12,13 @@ class CodeManager: ObservableObject {
     @Published var isMonitoringClipboard: Bool = false
     @Published var historyRetentionHours: Double = 48.0 // 默认48小时
     
-    private let codePattern = "(?:\\d{4,6}|\\d{4,6}[-\\s]\\d{4,6})"
+    /// 允许半角与全角数字，长度 4–8
+    private let codePattern = "(?:[0-9０-９]{4,8})"
+    /// 将全角数字转半角，并统一空白字符/破折号为半角空格，方便后续解析
+    private func normalize(_ text: String) -> String {
+        let halfWidth = text.applyingTransform(.fullwidthToHalfwidth, reverse: false) ?? text
+        return halfWidth.replacingOccurrences(of: "[\\u{00A0}\\u{3000}]", with: " ", options: .regularExpression)
+    }
     private let commonPrefixes = ["验证码", "code", "验证", "校验码", "認証", "인증", "コード"]
     private var clipboardTimer: Timer?
     private var lastClipboardContent: String = ""
@@ -189,6 +195,7 @@ class CodeManager: ObservableObject {
     }
     
     func extractCode(from text: String) -> String? {
+        let normalizedText = normalize(text)
         // 先尝试使用AI检测
         if let aiCode = aiDetector.detectVerificationCode(in: text) {
             print("AI检测到验证码: \(aiCode)")
@@ -198,9 +205,9 @@ class CodeManager: ObservableObject {
         // 如果AI检测失败，回退到正则表达式方法
         // 尝试在文本中找到常见的验证码前缀
         for prefix in commonPrefixes {
-            if let range = text.range(of: prefix, options: .caseInsensitive) {
+            if let range = normalizedText.range(of: prefix, options: .caseInsensitive) {
                 let startIndex = range.upperBound
-                let remainingText = String(text[startIndex...])
+                let remainingText = String(normalizedText[startIndex...])
                 
                 // 使用正则表达式提取验证码
                 if let regex = try? NSRegularExpression(pattern: codePattern, options: []),
@@ -214,9 +221,9 @@ class CodeManager: ObservableObject {
         
         // 如果没有找到前缀，尝试直接找验证码格式
         if let regex = try? NSRegularExpression(pattern: codePattern, options: []),
-           let match = regex.firstMatch(in: text, options: [], range: NSRange(text.startIndex..., in: text)) {
-            let matchedRange = Range(match.range, in: text)!
-            let code = String(text[matchedRange])
+           let match = regex.firstMatch(in: normalizedText, options: [], range: NSRange(normalizedText.startIndex..., in: normalizedText)) {
+            let matchedRange = Range(match.range, in: normalizedText)!
+            let code = String(normalizedText[matchedRange])
             return code.replacingOccurrences(of: "[\\s-]", with: "", options: .regularExpression)
         }
         

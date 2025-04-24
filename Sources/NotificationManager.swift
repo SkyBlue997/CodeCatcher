@@ -6,6 +6,7 @@ import AppKit
 class NotificationManager: ObservableObject {
     @Published var isMonitoring = false
     @Published var statusMessage = "未开始监听通知"
+    private var axObserver: AXObserver?
     
     // 移除UNUserNotificationCenter的直接使用
     private var notificationEnabled = false
@@ -35,13 +36,32 @@ class NotificationManager: ObservableObject {
     func startMonitoring() {
         guard !isMonitoring else { return }
         
-        // 注册通知中心观察者
-        DistributedNotificationCenter.default().addObserver(
-            self,
-            selector: #selector(handleNotification),
-            name: NSNotification.Name("com.apple.notification.center"),
-            object: nil
-        )
+        // 使用辅助功能 API 监听系统通知横幅
+        guard checkAccessibilityPermission() else {
+            statusMessage = "请在系统设置 ‣ 隐私与安全 ‣ 辅助功能 中授权 CodeCatcher"
+            requestAccessibilityPermission()
+            return
+        }
+
+        let systemElement = AXUIElementCreateSystemWide()
+        var observer: AXObserver?
+        if AXObserverCreate(ProcessInfo.processInfo.processIdentifier, { _, axNotif, element, _ in
+            guard axNotif as String == kAXNotificationMessageReceived else { return }
+            
+            var value: AnyObject?
+            if AXUIElementCopyAttributeValue(element, kAXDescriptionAttribute as CFString, &value) == .success,
+               let msg = value as? String {
+                Task { @MainActor in
+                    CodeManager.shared.extractAndSaveCode(from: msg)
+                }
+            }
+        }, &observer) == .success, let obs = observer {
+            axObserver = obs
+            AXObserverAddNotification(obs, systemElement, kAXNotificationMessageReceived as CFString, nil)
+            CFRunLoopAddSource(CFRunLoopGetCurrent(),
+                                AXObserverGetRunLoopSource(obs),
+                                .defaultMode)
+        }
         
         NSWorkspace.shared.notificationCenter.addObserver(
             self,
@@ -57,7 +77,12 @@ class NotificationManager: ObservableObject {
     func stopMonitoring() {
         guard isMonitoring else { return }
         
-        DistributedNotificationCenter.default().removeObserver(self)
+        if let obs = axObserver {
+            CFRunLoopRemoveSource(CFRunLoopGetCurrent(),
+                                  AXObserverGetRunLoopSource(obs),
+                                  .defaultMode)
+            axObserver = nil
+        }
         NSWorkspace.shared.notificationCenter.removeObserver(self)
         
         isMonitoring = false
