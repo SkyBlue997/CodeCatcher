@@ -6,6 +6,7 @@ struct SettingsView: View {
     @StateObject private var localizationManager = LocalizationManager.shared
     @StateObject private var appearanceManager = AppearanceManager.shared
     @StateObject private var aiDetector = AICodeDetector.shared
+    @StateObject private var smsMonitor = SMSMonitor()
     
     @State private var hasAccessibilityPermission = false
     @State private var launchAtLogin = LaunchAtLogin.isEnabled
@@ -147,7 +148,7 @@ struct SettingsView: View {
                         HStack {
                             Label("完全磁盘访问权限", systemImage: "externaldrive.fill")
                             Spacer()
-                            if notificationManager.checkFullDiskAccessPermission() {
+                            if smsMonitor.hasPermission {
                                 Image(systemName: "checkmark.circle.fill")
                                     .foregroundColor(.green)
                             } else {
@@ -160,13 +161,37 @@ struct SettingsView: View {
                         .padding(.horizontal)
                         .padding(.vertical, 6)
                         
-                        // 启用短信监控按钮
-                        Button("启用增强短信监控") {
-                            notificationManager.setupSMSMonitoring()
+                        // 启用短信监控开关
+                        Toggle(isOn: Binding(
+                            get: { smsMonitor.isMonitoring },
+                            set: { newValue in
+                                if newValue {
+                                    smsMonitor.startMonitoring()
+                                } else {
+                                    smsMonitor.stopMonitoring()
                         }
-                        .disabled(!notificationManager.checkFullDiskAccessPermission())
+                            }
+                        )) {
+                            Label("增强短信监控", systemImage: "message.fill")
+                        }
+                        .toggleStyle(SwitchToggleStyle())
+                        .disabled(!smsMonitor.hasPermission)
                         .padding(.horizontal)
-                        .padding(.vertical, 4)
+                        .padding(.vertical, 6)
+                        
+                        if smsMonitor.isMonitoring {
+                            Text("正在监控 iMessage 短信中的验证码")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal)
+                                .padding(.bottom, 6)
+                        } else if !smsMonitor.hasPermission {
+                            Text("需要完全磁盘访问权限才能监控短信")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal)
+                                .padding(.bottom, 6)
+                        }
                     }
                     
                     Group {
@@ -301,6 +326,7 @@ struct SettingsView: View {
         .onAppear {
             checkPermission()
             launchAtLogin = LaunchAtLogin.isEnabled
+            smsMonitor.checkPermission()
         }
     }
     

@@ -152,15 +152,45 @@ class CodeManager: ObservableObject {
     
     // 检查剪贴板内容
     private func checkClipboard() {
-        guard let clipboardContent = NSPasteboard.general.string(forType: .string) else { return }
+        // 先检查文本内容
+        if let clipboardContent = NSPasteboard.general.string(forType: .string),
+           clipboardContent != lastClipboardContent {
+            lastClipboardContent = clipboardContent
+            
+            // 尝试提取验证码
+            if let _ = extractCode(from: clipboardContent) {
+                extractAndSaveCode(from: clipboardContent)
+                return
+            }
+        }
         
-        // 如果剪贴板内容没有变化，直接返回
-        if clipboardContent == lastClipboardContent { return }
-        lastClipboardContent = clipboardContent
-        
-        // 尝试提取验证码
-        if let _ = extractCode(from: clipboardContent) {
-            extractAndSaveCode(from: clipboardContent)
+        // 检查图像内容
+        Task { @MainActor in
+            if let code = await VisionCodeDetector.shared.checkClipboardForImage() {
+                self.lastExtractedCode = code
+                
+                // 添加到历史记录
+                let newCode = VerificationCode(
+                    code: code,
+                    source: "图像",
+                    timestamp: Date()
+                )
+                
+                self.recentCodes.insert(newCode, at: 0)
+                
+                // 限制保存的验证码数量
+                if self.recentCodes.count > 20 {
+                    self.recentCodes = Array(self.recentCodes.prefix(20))
+                }
+                
+                // 保存到存储
+                self.saveCodesToStorage()
+                
+                // 自动复制到剪贴板
+                if self.autoClipboard {
+                    self.copyToClipboard(code)
+                }
+            }
         }
     }
     

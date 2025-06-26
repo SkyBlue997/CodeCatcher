@@ -4,32 +4,7 @@ import AppKit
 @MainActor
 struct MenuBarView: View {
     @EnvironmentObject var codeManager: CodeManager
-    @Environment(\.openWindow) private var openWindow
     @AppStorage("selectedTab") private var selectedTab: Int = 0
-    
-    // 将statusItem移到结构体内部并标记为MainActor隔离
-    static let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
-    
-    // 初始化设置状态栏图标
-    init() {
-        MenuBarView.configureStatusItem()
-    }
-    
-    // 配置状态栏图标
-    static func configureStatusItem() {
-        if let button = statusItem.button {
-            // 直接使用系统图标
-            if let image = NSImage(systemSymbolName: "shield.fill", accessibilityDescription: "验证码捕手") {
-                image.isTemplate = true  // 确保图标是单色的
-                button.image = image
-                print("✅ 已设置系统图标: shield.fill")
-            } else {
-                // 如果系统图标加载失败，使用emoji作为备用
-                button.title = "🔑"
-                print("⚠️ 系统图标加载失败，使用emoji替代")
-            }
-        }
-    }
     
     var body: some View {
         VStack(spacing: 8) {
@@ -66,6 +41,7 @@ struct MenuBarView: View {
                                 .foregroundColor(.blue)
                         }
                         .buttonStyle(.borderless)
+                        .help("复制验证码")
                     }
                     .padding(8)
                     .background(
@@ -89,37 +65,104 @@ struct MenuBarView: View {
             
             Divider()
             
-            // 操作按钮 - 简化二级菜单
-            Menu {
+            // 操作按钮
+            VStack(spacing: 4) {
                 Button(action: {
-                    NSApp.activate(ignoringOtherApps: true)
                     openMainWindow()
                 }) {
-                    Label(LocalizedStringKey.openMainWindow.localized, systemImage: "macwindow")
+                    HStack {
+                        Image(systemName: "macwindow")
+                        Text(LocalizedStringKey.openMainWindow.localized)
+                        Spacer()
+                    }
+                    .contentShape(Rectangle())
                 }
-                
-                Divider()
+                .buttonStyle(.borderless)
+                .foregroundColor(.primary)
                 
                 Button(action: {
                     NSApp.terminate(nil)
                 }) {
-                    Label(LocalizedStringKey.quit.localized, systemImage: "power")
+                    HStack {
+                        Image(systemName: "power")
+                        Text(LocalizedStringKey.quit.localized)
+                        Spacer()
+                    }
+                    .contentShape(Rectangle())
                 }
-            } label: {
-                Label(LocalizedStringKey.options.localized, systemImage: "ellipsis.circle")
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                .buttonStyle(.borderless)
+                .foregroundColor(.red)
             }
-            .menuStyle(BorderlessButtonMenuStyle())
-            .frame(maxWidth: .infinity, alignment: .leading)
-            
         }
         .padding()
         .frame(width: 250)
+        .background(Color(NSColor.controlBackgroundColor))
     }
     
     private func openMainWindow() {
-        if let window = NSApp.windows.first(where: { !($0.identifier?.rawValue.contains("MenuBarExtra") ?? false) }) {
+        // 关闭 popover
+        StatusBarController.shared.closePopover()
+        
+        // 设置为普通应用模式以显示主窗口
+        NSApp.setActivationPolicy(.regular)
+        NSApp.activate(ignoringOtherApps: true)
+        
+        // 先尝试查找现有的主窗口
+        var mainWindow: NSWindow?
+        
+        // 查找可能的主窗口
+        for window in NSApp.windows {
+            // 检查是否是 SwiftUI 的主窗口
+            if window.contentViewController is NSHostingController<ContentView> {
+                mainWindow = window
+                break
+            }
+            // 检查窗口大小（主窗口应该是 600x800）
+            else if window.frame.size.width == 600 && window.frame.size.height == 800 {
+                mainWindow = window
+                break
+            }
+            // 检查窗口是否有内容视图控制器且不是 popover
+            else if window.contentViewController != nil && 
+                    !(window.contentViewController is NSHostingController<MenuBarView>) &&
+                    !window.title.isEmpty {
+                mainWindow = window
+                break
+            }
+        }
+        
+        if let window = mainWindow {
+            // 找到主窗口，显示它
             window.makeKeyAndOrderFront(nil)
+            window.center()
+            window.orderFrontRegardless()
+            print("✅ 找到并显示主窗口")
+        } else {
+            // 如果没有找到主窗口，尝试创建新的
+            print("⚠️ 未找到主窗口，尝试通过菜单打开新窗口")
+            
+            // 尝试通过应用菜单打开新窗口
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                // 创建一个新的主窗口
+                let contentView = ContentView()
+                    .environmentObject(CodeManager.shared)
+                    .environmentObject(NotificationManager())
+                
+                let hostingController = NSHostingController(rootView: contentView)
+                let newWindow = NSWindow(
+                    contentRect: NSRect(x: 0, y: 0, width: 600, height: 800),
+                    styleMask: [.titled, .closable, .miniaturizable, .resizable],
+                    backing: .buffered,
+                    defer: false
+                )
+                
+                newWindow.contentViewController = hostingController
+                newWindow.title = "验证码捕手"
+                newWindow.center()
+                newWindow.makeKeyAndOrderFront(nil)
+                newWindow.orderFrontRegardless()
+                print("✅ 创建并显示新的主窗口")
+            }
         }
     }
     

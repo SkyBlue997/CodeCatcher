@@ -5,17 +5,59 @@ import AppKit
 // 添加AppDelegate类来处理应用程序生命周期
 class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusBarController: StatusBarController?
+    private var windowCloseObserver: Any?
     
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // 确保应用为普通应用（而不是后台应用或其他类型）
-        NSApp.setActivationPolicy(.regular)
-        NSApp.activate(ignoringOtherApps: true)
+        // 设置为辅助应用模式，只显示状态栏，不在 Dock 中显示
+        NSApp.setActivationPolicy(.accessory)
         
         // 在控制台打印日志，帮助诊断
-        print("应用程序已启动，窗口即将显示")
+        print("应用程序已启动，状态栏模式")
         
         // 初始化状态栏控制器
         statusBarController = StatusBarController.shared
+        
+        // 添加窗口关闭监听
+        setupWindowCloseObserver()
+    }
+    
+    func applicationWillTerminate(_ notification: Notification) {
+        // 清理观察者
+        if let observer = windowCloseObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+    }
+    
+    private func setupWindowCloseObserver() {
+        windowCloseObserver = NotificationCenter.default.addObserver(
+            forName: NSWindow.willCloseNotification,
+            object: nil,
+            queue: .main
+        ) { notification in
+            guard let window = notification.object as? NSWindow else { return }
+            
+            // 检查是否是主窗口关闭
+            if window.contentViewController is NSHostingController<ContentView> ||
+               window.title.contains("CodeCatcher") {
+                
+                // 延迟一点时间确保窗口完全关闭后再切换模式
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    // 检查是否还有其他主窗口打开
+                    let hasMainWindows = NSApp.windows.contains { win in
+                        win != window && (
+                            win.contentViewController is NSHostingController<ContentView> ||
+                            win.title.contains("CodeCatcher")
+                        )
+                    }
+                    
+                    // 如果没有其他主窗口，切换回辅助模式
+                    if !hasMainWindows {
+                        NSApp.setActivationPolicy(.accessory)
+                        print("主窗口已关闭，切换回状态栏模式")
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -26,10 +68,12 @@ class StatusBarController: NSObject {
     
     private var statusItem: NSStatusItem!
     private var codeManager: CodeManager?
+    private var popover: NSPopover?
     
     private override init() {
         super.init()
         setupStatusItem()
+        setupPopover()
     }
     
     func setCodeManager(_ manager: CodeManager) {
@@ -56,24 +100,30 @@ class StatusBarController: NSObject {
     }
     
     @MainActor
+    private func setupPopover() {
+        popover = NSPopover()
+        popover?.contentSize = NSSize(width: 260, height: 220)
+        popover?.behavior = .transient
+        popover?.animates = true
+    }
+    
+    @MainActor
     @objc private func togglePopover(_ sender: AnyObject?) {
-        guard statusItem.button != nil else { return }
+        guard let button = statusItem.button, let popover = popover else { return }
         
-        let menuView = NSHostingView(rootView: MenuBarView().environmentObject(codeManager ?? CodeManager.shared))
-        menuView.frame = NSRect(x: 0, y: 0, width: 250, height: 200)
-        
-        let menu = NSMenu()
-        let menuItem = NSMenuItem()
-        menuItem.view = menuView
-        menu.addItem(menuItem)
-        
-        // 添加退出选项
-        menu.addItem(NSMenuItem.separator())
-        let quitItem = NSMenuItem(title: "退出", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
-        menu.addItem(quitItem)
-        
-        statusItem.menu = menu
-        statusItem.button?.performClick(nil)
+        if popover.isShown {
+            popover.performClose(sender)
+        } else {
+            let menuView = MenuBarView().environmentObject(codeManager ?? CodeManager.shared)
+            popover.contentViewController = NSHostingController(rootView: menuView)
+            popover.show(relativeTo: button.bounds, of: button, preferredEdge: NSRectEdge.minY)
+        }
+    }
+    
+    // 添加公共方法来关闭 popover
+    @MainActor
+    func closePopover() {
+        popover?.performClose(nil)
     }
 }
 
@@ -88,10 +138,6 @@ struct CodeCatcherApp: App {
     
     init() {
         setupApplication()
-        // 设置状态栏控制器的codeManager
-        Task { @MainActor in
-            StatusBarController.shared.setCodeManager(codeManager)
-        }
     }
     
     private func setupApplication() {
@@ -110,13 +156,13 @@ struct CodeCatcherApp: App {
                 .background(Color(NSColor.windowBackgroundColor))
                 .onAppear {
                     print("主窗口视图已加载")
+                    // 设置状态栏控制器的codeManager
+                    StatusBarController.shared.setCodeManager(codeManager)
                 }
         }
         .windowStyle(HiddenTitleBarWindowStyle())
         .commands {
             CommandGroup(replacing: .newItem) { }
         }
-        
-        // 不再使用SwiftUI的MenuBarExtra，改为自定义NSStatusItem
     }
 } 

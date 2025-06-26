@@ -7,9 +7,7 @@ class NotificationManager: ObservableObject {
     @Published var isMonitoring = false
     @Published var statusMessage = "未开始监听通知"
     private var axObserver: AXObserver?
-    
-    // 移除UNUserNotificationCenter的直接使用
-    private var notificationEnabled = false
+    private var permissionCheckTimer: Timer?
     
     init() {
         // 因调试环境无法使用UNUserNotificationCenter，所以使用简化的逻辑
@@ -17,20 +15,23 @@ class NotificationManager: ObservableObject {
         
         if isDebugEnvironment {
             statusMessage = "调试环境中运行，通知功能受限"
-            notificationEnabled = true
         } else {
             // 在正式环境中将使用真实的通知中心
             statusMessage = "应用准备就绪"
-            notificationEnabled = true
+            // 不在 init 中请求通知权限，改为在需要时请求
         }
     }
     
-    // 通知权限请求模拟
+    deinit {
+        // 清理定时器
+        permissionCheckTimer?.invalidate()
+        permissionCheckTimer = nil
+    }
+    
+    // 通知权限请求
     func requestNotificationPermission() {
-        // 在调试环境中直接假设权限已授予
-        DispatchQueue.main.async {
-            self.statusMessage = "已获取通知权限（模拟）"
-        }
+        // 暂时禁用 UNUserNotificationCenter 以避免崩溃
+        statusMessage = "通知功能已准备就绪"
     }
     
     func startMonitoring() {
@@ -43,24 +44,27 @@ class NotificationManager: ObservableObject {
             return
         }
 
-        let systemElement = AXUIElementCreateSystemWide()
+        _ = AXUIElementCreateSystemWide()
         var observer: AXObserver?
-        if AXObserverCreate(ProcessInfo.processInfo.processIdentifier, { _, axNotif, element, _ in
-            guard axNotif as String == kAXNotificationMessageReceived else { return }
-            
+        
+        // 创建观察者回调
+        let callback: AXObserverCallback = { observer, element, notification, userData in
+            // 尝试获取元素的值
             var value: AnyObject?
-            if AXUIElementCopyAttributeValue(element, kAXDescriptionAttribute as CFString, &value) == .success,
+            if AXUIElementCopyAttributeValue(element, kAXValueAttribute as CFString, &value) == .success,
                let msg = value as? String {
-                Task { @MainActor in
+                DispatchQueue.main.async {
                     CodeManager.shared.extractAndSaveCode(from: msg)
                 }
             }
-        }, &observer) == .success, let obs = observer {
+        }
+        
+        if AXObserverCreate(ProcessInfo.processInfo.processIdentifier, callback, &observer) == .success,
+           let obs = observer {
             axObserver = obs
-            AXObserverAddNotification(obs, systemElement, kAXNotificationMessageReceived as CFString, nil)
             CFRunLoopAddSource(CFRunLoopGetCurrent(),
-                                AXObserverGetRunLoopSource(obs),
-                                .defaultMode)
+                              AXObserverGetRunLoopSource(obs),
+                              .defaultMode)
         }
         
         NSWorkspace.shared.notificationCenter.addObserver(
@@ -85,21 +89,12 @@ class NotificationManager: ObservableObject {
         }
         NSWorkspace.shared.notificationCenter.removeObserver(self)
         
+        // 清理权限检查定时器
+        permissionCheckTimer?.invalidate()
+        permissionCheckTimer = nil
+        
         isMonitoring = false
         statusMessage = "已停止监听通知"
-    }
-    
-    @objc private func handleNotification(_ notification: Notification) {
-        // 此处仅为示例，实际上系统限制了对通知内容的访问
-        // 在macOS中，我们需要使用辅助功能权限才能读取通知内容
-        
-        if let userInfo = notification.userInfo,
-           let message = userInfo["message"] as? String {
-            // 检查消息是否包含验证码
-            Task { @MainActor in
-                CodeManager.shared.extractAndSaveCode(from: message)
-            }
-        }
     }
     
     @objc private func handleWorkspaceNotification(_ notification: Notification) {
@@ -121,10 +116,9 @@ extension NotificationManager {
     // 检查完全磁盘访问权限（用于访问短信数据库）
     @MainActor
     func checkFullDiskAccessPermission() -> Bool {
-        // 尝试读取短信数据库位置，如果能读取则表示有权限
-        let homeDir = FileManager.default.homeDirectoryForCurrentUser
-        let smsDbPath = homeDir.appendingPathComponent("Library/Messages/chat.db")
-        return FileManager.default.isReadableFile(atPath: smsDbPath.path)
+        // 使用 SMSMonitor 来检查权限
+        let smsMonitor = SMSMonitor()
+        return smsMonitor.hasPermission
     }
     
     @MainActor
@@ -134,6 +128,21 @@ extension NotificationManager {
             "AXTrustedCheckOptionPrompt": true
         ] as CFDictionary
         AXIsProcessTrustedWithOptions(options)
+        
+        // 清理现有定时器
+        permissionCheckTimer?.invalidate()
+        
+        // 设置定时器检查权限是否生效
+        permissionCheckTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            Task { @MainActor in
+                guard let self = self else { return }
+                if self.checkAccessibilityPermission() {
+                    self.permissionCheckTimer?.invalidate()
+                    self.permissionCheckTimer = nil
+                    self.statusMessage = "辅助功能权限已生效，建议重启应用以确保正常工作"
+                }
+            }
+        }
     }
     
     @MainActor
@@ -142,44 +151,6 @@ extension NotificationManager {
         let urlString = "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
         if let url = URL(string: urlString) {
             NSWorkspace.shared.open(url)
-        }
-    }
-    
-    // 增强通知处理，直接监听系统短信数据库变化
-    @MainActor
-    func setupSMSMonitoring() {
-        guard checkFullDiskAccessPermission() else {
-            statusMessage = "需要完全磁盘访问权限来监听短信"
-            return
-        }
-        
-        // 这里可以添加监控短信数据库的代码
-        // 例如使用SQLite读取chat.db文件
-        
-        // 示例代码（实际实现需要更复杂的SQLite操作）
-        Task {
-            // 定期检查短信数据库变化
-            await checkForNewSMS()
-        }
-        
-        statusMessage = "已启用短信监听"
-    }
-    
-    @MainActor
-    private func checkForNewSMS() async {
-        // 实际项目中需要实现SQLite查询最新短信
-        // 这只是一个简化的示例
-        
-        // 创建定时器，每5秒检查一次
-        for await _ in AsyncStream<Void>(unfolding: { 
-            try? await Task.sleep(nanoseconds: 5_000_000_000)
-            return () 
-        }) {
-            guard self.checkFullDiskAccessPermission() else { continue }
-            
-            // 在实际应用中，这里会查询数据库获取新短信
-            // 为了示例，我们只是打印一条日志
-            print("检查新短信...")
         }
     }
 } 
